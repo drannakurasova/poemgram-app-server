@@ -6,6 +6,9 @@ module.exports = (app) => {
 
   app.use((err, req, res, next) => {
     // whenever you call next(err), this middleware will handle the error
+    if (err.status === 401) {
+      res.status(401).json({errorMessage: "Token not valid"})
+    }
     // always logs the error
     console.error("ERROR", req.method, req.path, err);
 
