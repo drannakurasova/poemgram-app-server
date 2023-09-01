@@ -4,15 +4,27 @@ const jwt = require("jsonwebtoken");
 const isAuthenticated = require("../middlewares/isAuthenticated");
 const User = require("../models/User.model");
 
+
 //POST  /auth /signup    gets data from the form to create a new user
 router.post("/signup", async (req, res, next) => {
-  const { firstName, lastName, bornIn, photo, email, password } = req.body;
+  const { firstName, lastName, photo, email, password } = req.body;
   //   console.log("post signup", req.body);
 
-  if (!firstName || !lastName || !bornIn || !email || !password) {
+  if (!firstName || !lastName || !email || !password) {
     return res
       .status(400)
       .json({ errorMessage: "Please fill in all the fields" });
+  }
+
+  try {
+    const foundUser = await User.findOne ({email})
+    if (foundUser !== null) {
+        res.status(400).json({errorMessage:"This email is already registered"});
+        return
+    }
+    
+  } catch (error) {
+    console.log(error);
   }
 
   const regexPassword =
@@ -25,18 +37,28 @@ router.post("/signup", async (req, res, next) => {
     return;
   }
 
+
+
   try {
     const salt = await bcrypt.genSalt(10);
     const hashPassword = await bcrypt.hash(password, salt);
     // console.log("password", hashPassword);
 
-    await User.create({
+    const newUser= await User.create({
       firstName,
       lastName,
-      bornIn,
+      photo,
       email,
       password: hashPassword,
     });
+
+
+
+    
+
+    // if (photo === "" ) {
+    //     photo = photoDefault
+    // }
 
     res.json("accessing");
   } catch (error) {
@@ -51,7 +73,7 @@ router.post("/login", async (req, res, next) => {
 
   try {
     const foundUser = await User.findOne({ email });
-    // console.log("found user", foundUser);
+    console.log("found user", foundUser);
 
     if (!email || !password) {
       return res
@@ -94,7 +116,7 @@ router.post("/login", async (req, res, next) => {
 
 // GET /auth/verify to let the FE know that the user is active
 router.get("/verify", isAuthenticated, (req, res, next) => {
-  res.json("token is valid");
+  res.json(req.payload);
 });
 
 module.exports = router;
