@@ -14,7 +14,7 @@ const poetSchema = new Schema(
       required: true,
     },
 
-    photo: {
+    image: {
       type: String,
       // default: ....
     },

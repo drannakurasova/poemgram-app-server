@@ -57,7 +57,7 @@ router.post("/signup", async (req, res, next) => {
     //     photo = photoDefault
     // }
 
-    // res.json("accessing");
+    res.json({newUser});
   } catch (error) {
     console.log(error);
   }
