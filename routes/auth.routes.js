@@ -7,8 +7,8 @@ const User = require("../models/User.model");
 
 //POST  /auth /signup    gets data from the form to create a new user
 router.post("/signup", async (req, res, next) => {
-  const { firstName, lastName, photo, email, password } = req.body;
-  //   console.log("post signup", req.body);
+  const { firstName, lastName, image, email, password } = req.body;
+    console.log("post signup", req.body);
 
   if (!firstName || !lastName || !email || !password) {
     return res
@@ -47,20 +47,17 @@ router.post("/signup", async (req, res, next) => {
     const newUser= await User.create({
       firstName,
       lastName,
-      photo,
+      image,
       email,
       password: hashPassword,
     });
 
 
-
-    
-
     // if (photo === "" ) {
     //     photo = photoDefault
     // }
 
-    res.json("accessing");
+    // res.json("accessing");
   } catch (error) {
     console.log(error);
   }
@@ -107,6 +104,7 @@ router.post("/login", async (req, res, next) => {
       algorithm: "HS256",
       expiresIn: "2d",
     });
+    console.log(authToken);
 
     res.json({ authToken });
   } catch (error) {

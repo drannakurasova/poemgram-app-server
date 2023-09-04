@@ -19,9 +19,9 @@ router.get("/:userId/profile", isAuthenticated, async (req, res, next) => {
 router.put("/:userId/profile", isAuthenticated, async (req, res, next)=> {
     try {
 
-        const {firstName, lastName, photo, email} = req.body
+        const {firstName, lastName, image, email} = req.body
         const userToUpdate = await User.findByIdAndUpdate(req.params.userId, {
-            firstName, lastName,photo, email
+            firstName, lastName, image, email
         })
 
         return res.json (userToUpdate)
