@@ -89,6 +89,21 @@ router.put("/:poetId/details", async (req, res, next)=> {
     }
 })
 
+//PATCH /:poetId/details/edit-image to change the image
+router.patch("/:poetId/details", isAuthenticated, async (req, res, next) => {
+    try {
+      const { image } = req.body;
+      const poetImageToUpdate = await Poet.findByIdAndUpdate(req.params.poetId, {
+        image,
+      });
+  
+      return res.json(poetImageToUpdate);
+    } catch (error) {
+      next(error);
+    }
+  });
+  
+
 //DELETE  /:poetId/details  to delete the poet and navigate to all poets
 router.delete ("/:poetId/details", async (req, res, next) => {
     try {
