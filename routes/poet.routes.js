@@ -46,7 +46,7 @@ router.post("/new-poet", isAuthenticated, async (req, res, next) => {
 });
 
 // GET /poet/all-poets to show all th epoets from the DB
-router.get ("/all-poets", async (req, res, next) => {
+router.get ("/all-poets",  isAuthenticated, async (req, res, next) => {
     try {
      
     const allPoets = await Poet.find().select({ firstName: 1 , lastName: 1, image: 1})
@@ -60,7 +60,7 @@ router.get ("/all-poets", async (req, res, next) => {
 })
 
 // GET /poet/:poetId/details to show one poet´s info
-router.get ("/:poetId/details", async (req, res, next) => {
+router.get ("/:poetId/details",  isAuthenticated, async (req, res, next) => {
     try {
         const foundPoet = await Poet.findById(req.params.poetId).populate("createdBy")
         // const foundUser = await User.findById(foundPoet.createdBy)
@@ -73,7 +73,7 @@ router.get ("/:poetId/details", async (req, res, next) => {
 })
 
 //PUT  /:poetId/details  gets the updated form and sends the new info to the DB
-router.put("/:poetId/details", async (req, res, next)=> {
+router.put("/:poetId/details",  isAuthenticated, async (req, res, next)=> {
     try {
 
         const {firstName, lastName, image, bornIn, } = req.body
@@ -103,9 +103,17 @@ router.patch("/:poetId/details", isAuthenticated, async (req, res, next) => {
     }
   });
   
+//PATCH /:poetId/details/add-to-favourite
+router.patch ("/:poetId/add-to-favourite",  isAuthenticated, async (req, res, next) => {
+  try {
+    
+  } catch (error) {
+    next (error)
+  }
+})
 
 //DELETE  /:poetId/details  to delete the poet and navigate to all poets
-router.delete ("/:poetId/details", async (req, res, next) => {
+router.delete ("/:poetId/details",  isAuthenticated, async (req, res, next) => {
     try {
         await Poet.findByIdAndDelete(req.params.poetId)
         res.json("poet deleted")
