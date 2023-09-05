@@ -19,4 +19,7 @@ router.use ("/poem", poemRouter)
 const poetRouter = require ("./poet.routes")
 router.use("/poet", poetRouter)
 
+const newsRouter = require ("./news.routes")
+router.use ("/news", newsRouter)
+
 module.exports = router;
