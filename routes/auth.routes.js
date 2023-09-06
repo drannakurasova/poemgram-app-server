@@ -104,7 +104,7 @@ router.post("/login", async (req, res, next) => {
       algorithm: "HS256",
       expiresIn: "2d",
     });
-    console.log(authToken);
+    console.log("payload", foundUser.role );
 
     res.json({ authToken });
   } catch (error) {
