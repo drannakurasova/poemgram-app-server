@@ -6,7 +6,7 @@ const uploader = require("../middlewares/cloudinary.config.js");
 const isAuthenticated = require("../middlewares/isAuthenticated.js");
 
 // POST "/api/upload"
-router.post("/", uploader.single("image"), isAuthenticated, (req, res, next) => {
+router.post("/", uploader.single("image"), (req, res, next) => {
   console.log("file is: ", req.file);
 
   if (!req.file) {

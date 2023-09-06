@@ -10,15 +10,39 @@ router.get("/poemgram", async (req,res,next)=>{
  try {
   const API_KEY = process.env.NEWS_API_KEY
   const currentNews = await axios.get(`https://newsdata.io/api/1/news?apikey=${API_KEY}&language=en&q=song OR bridal OR moon OR roses OR raven NOT (violence AND murder AND rape AND gun AND torture AND tragic)`)
-  // const allPoems = await Poem.find()
-  // let relatedPoem={}
+  const allPoems = await Poem.find()
+  let relatedPoem={}
   // let keyword = ""
   // const articles=currentNews.data.results
   // articles.forEach (async (article) =>
-  // // keyword = article.description.split(" ")
-  // relatedPoem = await Poem.findOne ({text: {$in: [JSON.toStringify(article.description.split(" "))]}})  )
-  
-  console.log(currentNews.data.results);
+  // keyword = article.description.split(" ")
+  // relatedPoem = await Poem.findOne ({text: {$in: [JSON.toStringify(article.description.split(" "))]}})  
+  // )
+  const articles=currentNews.data.results
+  const notWanted = ["or", "and", "a", "by"," on", "when"]
+
+  articles.forEach ( (article) => { 
+  let poem = null
+    
+     allPoems.forEach ((eachPoem)=> {
+      article.content.split(" ").forEach ( (eachWord) => {
+        if (notWanted.includes(eachWord.toLowerCase()) ) {
+          return
+        } 
+        for (let i=0; i<eachPoem.text.length; i++) {
+          if(eachPoem.text.toLowerCase().includes(eachWord.toLowerCase())) {
+            poem = eachPoem
+            break
+        } }
+        // if (eachPoem.text.toLowerCase().includes(eachWord.toLowerCase())) {
+        //   poem = eachPoem
+        // }
+      } )
+    } )
+    article.relatedPoem = poem
+  } )
+
+  console.log(articles);
   res.json(currentNews.data.results)
  } catch (error) {
 console.log(error);

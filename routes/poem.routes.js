@@ -1,6 +1,7 @@
 const isAuthenticated = require("../middlewares/isAuthenticated");
 const Poem = require("../models/Poem.model");
 const Poet = require("../models/Poet.model");
+const User = require("../models/User.model");
 
 const router = require("express").Router();
 
@@ -91,6 +92,40 @@ router.put("/:poemId/details",  isAuthenticated, async (req, res, next)=> {
         next(error);
     }
 })
+
+//PATCH /:poemId/details/add-to-favourite
+router.patch(
+    "/:poemId/add-to-favourite",
+    isAuthenticated,
+    async (req, res, next) => {
+      try {
+   
+        const foundUser = await User.findById(req.payload._id);
+  
+        if (foundUser.likePoem.includes(req.params.poemId) === true) {
+          const poemPulled = await User.findByIdAndUpdate(req.payload._id, {
+            $pull: { likePoem: req.params.poemId },
+          });
+          console.log("pulled");
+          return res.json (poemPulled)
+        } else { 
+  
+        const poemAdded = await User.findByIdAndUpdate(
+          req.payload._id,
+          {
+            $addToSet: { likePoem: req.params.poemId },
+          }
+        );
+        console.log("added");
+        return res.json(poemAdded);
+      }
+  
+        
+      } catch (error) {
+        next(error);
+      }
+    }
+  );
 
 //DELETE  /:poemId/details  to delete the poet and navigate to all poets
 router.delete ("/:poemId/details",  isAuthenticated, async (req, res, next) => {
