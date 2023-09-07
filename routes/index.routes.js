@@ -116,23 +116,35 @@ router.get("/poemgram", async (req, res, next) => {
       "AD",
       "them",
       "G",
-      "any"
+      "any",
+      "-",
+      "Mr",
+      "me",
+      "such",
+      "will",
+      "up",
+      "your",
+      "S",
+      "which",
+      "there",
+      "had"
     ];
 
+
+    let poemsRelated = [];
     articles.forEach((article) => {
       let poem = null;
       let word = ""
-      let poemsRelated = [];
       for (let i = 0; i < allPoems.length; i++) {
         article.content.split(" ").forEach((eachWord) => {
-          if (notWanted.includes(eachWord.toLowerCase())) {
+          if (notWanted.includes(eachWord.toLowerCase()) === true) {
             return;
           }
-          if (poem === null && allPoems[i].text.toLowerCase().includes(eachWord.toLowerCase())) {
+          if (poem === null && allPoems[i].text.toLowerCase().includes(eachWord.toLowerCase()) && poemsRelated.includes (allPoems[i]) === false) {
             console.log(eachWord, allPoems[i].title);
             poem = allPoems[i]
             word= eachWord
-            // poemsRelated.push(allPoems[i]);
+           
             // console.log("related poems", poemsRelated);
 
             // for (let j = 0; j<poemsRelated.length; j++) {
@@ -149,12 +161,14 @@ router.get("/poemgram", async (req, res, next) => {
             //     
             //   }
             // }
-          }
+          } 
         });
+        
       }
+      poemsRelated.push(poem);
       article.relatedPoem = poem;
       article.relatedOwrd = word
-      console.log("article with a related poem", article);
+      console.log("poemRelated", poemsRelated.length);
     });
 
     console.log("how many artciles",articles.length);

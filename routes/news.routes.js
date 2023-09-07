@@ -208,7 +208,15 @@ router.get("/news-in-poems/details", isAuthenticated, async(req, res, next) => {
             "AD",
             "them",
             "G",
-            "any"
+            "any",
+            "-",
+            "Mr",
+            "me",
+            "such",
+            "will",
+            "up",
+            "your",
+            "S"
           ];
       
           articles.forEach((article) => {
