@@ -60,6 +60,7 @@ router.get("/all-poets", isAuthenticated, async (req, res, next) => {
       firstName: 1,
       lastName: 1,
       image: 1,
+      bornIn: 1
     });
     // console.log(allPoets);
     res.json({ allPoets });
@@ -89,9 +90,9 @@ router.put(
   async (req, res, next) => {
     try {
       const thisPoet = await Poet.findById(req.params.poetId).populate("createdBy")
-      // if (req.payload.role === "user" && req.payload._id == thisPoet.createdBy._id) { 
-      //        return res.json({ errorMessage: "You can only edit the poet you have created" });
-      //  }
+      if (req.payload.role === "user" && req.payload._id !== thisPoet.createdBy._id) { 
+             return res.status(401).json({ errorMessage: "You can only edit the poet you have created" });
+       }
 
       const { firstName, lastName, image, bornIn } = req.body;
       const poetToUpdate = await Poet.findByIdAndUpdate(req.params.poetId, {

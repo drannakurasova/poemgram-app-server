@@ -49,7 +49,7 @@ router.post("/new-poem", isAuthenticated, async (req, res, next) => {
 // GET /poem/all-poems to show all the poems from the DB
 router.get("/all-poems", isAuthenticated, async (req, res, next) => {
   try {
-    const allPoems = await Poem.find().select({ title: 1 }).populate("poet");
+    const allPoems = await Poem.find().select({ title: 1, createdAt:1 }).populate("poet");
     // console.log(allPoems);
     res.json({ allPoems });
   } catch (error) {
@@ -72,6 +72,11 @@ router.get("/:poemId/details", isAuthenticated, async (req, res, next) => {
 //PUT  /:poemId/details  gets the updated form and sends the new info to the DB
 router.put("/:poemId/details", isAuthenticated, async (req, res, next) => {
   try {
+    // const thisPoem = await Poem.findById(req.params.poetId)
+    // if (req.payload.role === "user" && req.payload._id !== thisPoem.createdBy) { 
+    //        return res.status(401).json({ errorMessage: "You can only edit the poet you have created" });
+    //  }
+
     const { title, text, poet } = req.body;
     const poemToUpdate = await Poem.findByIdAndUpdate(req.params.poemId, {
       title,
