@@ -16,16 +16,14 @@ const poetSchema = new Schema(
 
     image: {
       type: String,
-      // default: ....
     },
 
     bornIn: Number,
 
-    createdBy: 
-      {
-        type: mongoose.Types.ObjectId,
-        ref: "User",
-      },
+    createdBy: {
+      type: mongoose.Types.ObjectId,
+      ref: "User",
+    },
   },
   {
     timestamps: true,

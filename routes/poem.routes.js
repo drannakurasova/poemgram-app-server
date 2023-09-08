@@ -9,7 +9,7 @@ const router = require("express").Router();
 router.get("/new-poem", isAuthenticated, async (req, res, next) => {
   try {
     const allPoets = await Poet.find().select({ firstName: 1, lastName: 1 });
-    // console.log(allPoets);
+
     res.json(allPoets);
   } catch (error) {
     console.log(error);
@@ -18,7 +18,6 @@ router.get("/new-poem", isAuthenticated, async (req, res, next) => {
 
 // POST/poem/new-poem to show a form to create a new poem (by admin many and any user)
 router.post("/new-poem", isAuthenticated, async (req, res, next) => {
-  // console.log("all good")
   const { title, text, poet } = req.body;
 
   if (!text || !poet || !title) {
@@ -49,8 +48,10 @@ router.post("/new-poem", isAuthenticated, async (req, res, next) => {
 // GET /poem/all-poems to show all the poems from the DB
 router.get("/all-poems", isAuthenticated, async (req, res, next) => {
   try {
-    const allPoems = await Poem.find().select({ title: 1, createdAt:1 }).populate("poet");
-    // console.log(allPoems);
+    const allPoems = await Poem.find()
+      .select({ title: 1, createdAt: 1 })
+      .populate("poet");
+
     res.json({ allPoems });
   } catch (error) {
     console.log(error);
@@ -62,7 +63,6 @@ router.get("/:poemId/details", isAuthenticated, async (req, res, next) => {
   try {
     const foundPoem = await Poem.findById(req.params.poemId).populate("poet");
 
-    // console.log(foundPoem);
     res.json([foundPoem]);
   } catch (error) {
     console.log(error);
@@ -72,18 +72,12 @@ router.get("/:poemId/details", isAuthenticated, async (req, res, next) => {
 //PUT  /:poemId/details  gets the updated form and sends the new info to the DB
 router.put("/:poemId/details", isAuthenticated, async (req, res, next) => {
   try {
-    // const thisPoem = await Poem.findById(req.params.poetId)
-    // if (req.payload.role === "user" && req.payload._id !== thisPoem.createdBy) { 
-    //        return res.status(401).json({ errorMessage: "You can only edit the poet you have created" });
-    //  }
-
     const { title, text, poet } = req.body;
     const poemToUpdate = await Poem.findByIdAndUpdate(req.params.poemId, {
       title,
       text,
       poet,
     });
-    // console.log(poemToUpdate);
 
     return res.json(poemToUpdate);
   } catch (error) {
@@ -103,13 +97,13 @@ router.patch(
         const poemPulled = await User.findByIdAndUpdate(req.payload._id, {
           $pull: { likePoem: req.params.poemId },
         });
-        //   console.log("pulled");
+
         return res.json(poemPulled);
       } else {
         const poemAdded = await User.findByIdAndUpdate(req.payload._id, {
           $addToSet: { likePoem: req.params.poemId },
         });
-        // console.log("added");
+
         return res.json(poemAdded);
       }
     } catch (error) {

@@ -127,51 +127,33 @@ router.get("/poemgram", async (req, res, next) => {
       "S",
       "which",
       "there",
-      "had"
+      "had",
     ];
-
 
     let poemsRelated = [];
     articles.forEach((article) => {
       let poem = null;
-      let word = ""
+      let word = "";
       for (let i = 0; i < allPoems.length; i++) {
         article.content.split(" ").forEach((eachWord) => {
           if (notWanted.includes(eachWord.toLowerCase()) === true) {
             return;
           }
-          if (poem === null && allPoems[i].text.toLowerCase().includes(eachWord.toLowerCase()) && poemsRelated.includes (allPoems[i]) === false) {
-            console.log(eachWord, allPoems[i].title);
-            poem = allPoems[i]
-            word= eachWord
-           
-            // console.log("related poems", poemsRelated);
-
-            // for (let j = 0; j<poemsRelated.length; j++) {
-            //   let maxCounter = 0;
-            //   let counter = 0;
-            //   if (allPoems[i] === poemsRelated[j]) {
-            //     counter ++
-            //   }
-
-            //   console.log("counter", counter);
-
-            //   if (counter > maxCounter) {
-            //     maxCounter = counter;
-            //     
-            //   }
-            // }
-          } 
+          if (
+            poem === null &&
+            allPoems[i].text.toLowerCase().includes(eachWord.toLowerCase()) &&
+            poemsRelated.includes(allPoems[i]) === false
+          ) {
+            poem = allPoems[i];
+            word = eachWord;
+          }
         });
-        
       }
       poemsRelated.push(poem);
       article.relatedPoem = poem;
-      article.relatedOwrd = word
-      console.log("poemRelated", poemsRelated.length);
+      article.relatedOwrd = word;
     });
 
-    console.log("how many artciles",articles.length);
     res.json(articles);
   } catch (error) {
     console.log(error);

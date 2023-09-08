@@ -7,8 +7,10 @@ const isAuthenticated = require("../middlewares/isAuthenticated");
 
 router.get("/:userId/profile", isAuthenticated, async (req, res, next) => {
   try {
-    const foundUser = await User.findById(req.params.userId).populate("likePoem").populate("favouritePoet");
-    console.log("user route", foundUser);
+    const foundUser = await User.findById(req.params.userId)
+      .populate("likePoem")
+      .populate("favouritePoet");
+
     res.json(foundUser);
   } catch (error) {
     console.log(error);

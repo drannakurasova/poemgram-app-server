@@ -10,7 +10,6 @@ const poemSchema = new Schema(
       ref: "Poet",
     },
 
-
     apiId: String,
   },
   {

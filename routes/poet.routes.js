@@ -7,12 +7,8 @@ const isAdmin = require("../middlewares/isAdmin");
 //? GET /poets/new-poet to create a new poet (by admin many and one by user)
 // POST /poet/new-poet to show a form to create a new poet (by admin many and one by user)
 router.post("/new-poet", isAuthenticated, async (req, res, next) => {
-  // console.log("all good")
-
   try {
     const { firstName, lastName, image, bornIn } = req.body;
-    // console.log("post new poet", req.body);
-    // console.log("payload", req.payload);
 
     if (!firstName || !lastName || !image || !bornIn) {
       return res
@@ -23,9 +19,7 @@ router.post("/new-poet", isAuthenticated, async (req, res, next) => {
     if (req.payload.role === "user") {
       const allPoets = await Poet.find().populate("createdBy");
       allPoets.forEach((eachPoet) => {
-        // console.log("each created by id", eachPoet.createdBy._id);
         if (req.payload._id == eachPoet.createdBy._id) {
-          // console.log(eachPoet.createdBy._id, req.payload._id);
           res
             .status(400)
             .json({ errorMessage: "You have already created a poet persona" });
@@ -62,7 +56,7 @@ router.get("/all-poets", isAuthenticated, async (req, res, next) => {
       image: 1,
       bornIn: 1,
     });
-    // console.log(allPoets);
+
     res.json({ allPoets });
   } catch (error) {
     console.log(error);
@@ -75,9 +69,8 @@ router.get("/:poetId/details", isAuthenticated, async (req, res, next) => {
     const foundPoet = await Poet.findById(req.params.poetId).populate(
       "createdBy"
     );
-    // const foundUser = await User.findById(foundPoet.createdBy)
-    // console.log(foudPoet);
-    res.json([foundPoet]);
+
+    res.json(foundPoet);
   } catch (error) {
     console.log(error);
   }
@@ -86,25 +79,22 @@ router.get("/:poetId/details", isAuthenticated, async (req, res, next) => {
 //PUT  /:poetId/details  gets the updated form and sends the new info to the DB
 router.put("/:poetId/details", isAuthenticated, async (req, res, next) => {
   try {
-    
-  //   if (req.payload.role === "user") {
-  //     const thisPoet = await Poet.findById(req.params.poetId)
-  //     if (req.payload._id !== thisPoet.createdBy) {
-  //     res
-  //       .status(401)
-  //       .json({ errorMessage: "You can only edit the poet you have created" });
-    
-  //   } return
-  // } 
+    const thisPoet = await Poet.findById(req.params.poetId);
+    // console.log(req.payload.role, req.payload._id, thisPoet.createdBy)
+    if (req.payload.role === "user" && req.payload._id != thisPoet.createdBy) {
+      return res
+        .status(401)
+        .json({ errorMessage: "You can only edit the poet you´ve added" });
+    }
 
-      const { firstName, lastName, image, bornIn } = req.body;
-      const poetToUpdate = await Poet.findByIdAndUpdate(req.params.poetId, {
-        firstName,
-        lastName,
-        image,
-        bornIn,
-      });
-      return res.json(poetToUpdate); // console.log(poetToUpdate)
+    const { firstName, lastName, image, bornIn } = req.body;
+    const poetToUpdate = await Poet.findByIdAndUpdate(req.params.poetId, {
+      firstName,
+      lastName,
+      image,
+      bornIn,
+    });
+    return res.json(poetToUpdate);
   } catch (error) {
     next(error);
   }
@@ -117,20 +107,17 @@ router.patch(
 
   async (req, res, next) => {
     try {
-      // const thisPoet = await Poet.findById(req.params.poetId).populate(
-      //   "createdBy"
-      // );
-      // if (
-      //   req.payload.role === "user" &&
-      //   req.payload._id != thisPoet.createdBy._id
-      // ) {
-      //   return res
-      //     .status(401)
-      //     .json({
-      //       errorMessage: "You can only edit the poet you have created",
-      //     });
-      // }
       const { image } = req.body;
+      const thisPoet = await Poet.findById(req.params.poetId);
+      // console.log(req.payload.role, req.payload._id, thisPoet.createdBy)
+      if (
+        req.payload.role === "user" &&
+        req.payload._id != thisPoet.createdBy
+      ) {
+        return res
+          .status(401)
+          .json({ errorMessage: "You can only edit the poet you´ve added" });
+      }
       const poetImageToUpdate = await Poet.findByIdAndUpdate(
         req.params.poetId,
         {
@@ -151,14 +138,13 @@ router.patch(
   isAuthenticated,
   async (req, res, next) => {
     try {
-      // const {addToFavouritePoet} =req.body
       const foundUser = await User.findById(req.payload._id);
 
       if (foundUser.favouritePoet.includes(req.params.poetId) === true) {
         const poetPulled = await User.findByIdAndUpdate(req.payload._id, {
           $pull: { favouritePoet: req.params.poetId },
         });
-        // console.log("pulled");
+
         return res.json(poetPulled);
       } else {
         const favouritePoetToUpdate = await User.findByIdAndUpdate(
@@ -167,7 +153,7 @@ router.patch(
             $addToSet: { favouritePoet: req.params.poetId },
           }
         );
-        // console.log("added");
+
         return res.json(favouritePoetToUpdate);
       }
     } catch (error) {
@@ -183,19 +169,14 @@ router.delete(
   // isAdmin,
   async (req, res, next) => {
     try {
-      // const thisPoet = await Poet.findById(req.params.poetId).populate(
-      //   "createdBy"
-      // );
-      // if (
-      //   req.payload.role === "user" &&
-      //   req.payload._id !== thisPoet.createdBy._id
-      // ) {
-      //   return res
-      //     .status(401)
-      //     .json({
-      //       errorMessage: "You can only delete the poet you have created",
-      //     });
-      // }
+      if (
+        req.payload.role === "user" &&
+        req.payload._id != thisPoet.createdBy
+      ) {
+        return res
+          .status(401)
+          .json({ errorMessage: "You can only delete the poet you´ve added" });
+      }
       await Poet.findByIdAndDelete(req.params.poetId);
       res.json("poet deleted");
     } catch (error) {

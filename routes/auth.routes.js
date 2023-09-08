@@ -4,11 +4,9 @@ const jwt = require("jsonwebtoken");
 const isAuthenticated = require("../middlewares/isAuthenticated");
 const User = require("../models/User.model");
 
-
 //POST  /auth /signup    gets data from the form to create a new user
 router.post("/signup", async (req, res, next) => {
   const { firstName, lastName, image, email, password } = req.body;
-    console.log("post signup", req.body);
 
   if (!firstName || !lastName || !email || !password) {
     return res
@@ -17,12 +15,13 @@ router.post("/signup", async (req, res, next) => {
   }
 
   try {
-    const foundUser = await User.findOne ({email})
+    const foundUser = await User.findOne({ email });
     if (foundUser !== null) {
-        res.status(400).json({errorMessage:"This email is already registered"});
-        return
+      res
+        .status(400)
+        .json({ errorMessage: "This email is already registered" });
+      return;
     }
-    
   } catch (error) {
     console.log(error);
   }
@@ -37,14 +36,11 @@ router.post("/signup", async (req, res, next) => {
     return;
   }
 
-
-
   try {
     const salt = await bcrypt.genSalt(10);
     const hashPassword = await bcrypt.hash(password, salt);
-    // console.log("password", hashPassword);
 
-    const newUser= await User.create({
+    const newUser = await User.create({
       firstName,
       lastName,
       image,
@@ -52,12 +48,7 @@ router.post("/signup", async (req, res, next) => {
       password: hashPassword,
     });
 
-
-    // if (photo === "" ) {
-    //     photo = photoDefault
-    // }
-
-    res.json({newUser});
+    res.json({ newUser });
   } catch (error) {
     console.log(error);
   }
@@ -66,11 +57,9 @@ router.post("/signup", async (req, res, next) => {
 //POST  /auth /login   gets data from the form to let or forbid access
 router.post("/login", async (req, res, next) => {
   const { email, password } = req.body;
-  // console.log(req.body);
 
   try {
     const foundUser = await User.findOne({ email });
-    console.log("found user", foundUser);
 
     if (!email || !password) {
       return res
@@ -86,7 +75,6 @@ router.post("/login", async (req, res, next) => {
       password,
       foundUser.password
     );
-    // console.log("is password correct", isPasswordCorrect);
 
     if (isPasswordCorrect === false) {
       return res
@@ -104,7 +92,6 @@ router.post("/login", async (req, res, next) => {
       algorithm: "HS256",
       expiresIn: "2d",
     });
-    console.log("payload", foundUser.role );
 
     res.json({ authToken });
   } catch (error) {
